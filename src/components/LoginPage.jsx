@@ -37,6 +37,8 @@ const LoginPage = () => {
         position: "top-right",
         theme: "colored",
         });
+        localStorage.setItem("Role",res.data.role)
+
         if(res){
             navigate('/home')
         }
