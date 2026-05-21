@@ -11,7 +11,7 @@ const Sidebar = ({ role, handleLogout }) => {
 
   const userLinks = [
     { name: 'Dashboard', path: '/home' },
-    { name: 'Voting Portal', path: '/voting' },
+    { name: 'Candidates', path: '/candidates' },
     { name: 'Profile', path: '/profile' },
   ];
 

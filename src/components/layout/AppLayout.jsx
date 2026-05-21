@@ -6,19 +6,20 @@ import Header from './Header';
 const AppLayout = () => {
   // Mock role management for preview purposes
   const [role, setRole] = useState(() => {
-    return localStorage.getItem('userRole') || 'user';
+    return localStorage.getItem('Role') || 'user';
   });
   const navigate = useNavigate();
 
   const handleRoleToggle = () => {
     const newRole = role === 'admin' ? 'user' : 'admin';
     setRole(newRole);
-    localStorage.setItem('userRole', newRole);
+    // localStorage.setItem('userRole', newRole);
     navigate('/home'); // Redirect to dashboard on role change
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userRole');
+    // localStorage.removeItem('userRole');
+    localStorage.removeItem('Role');
     navigate('/');
   };
 

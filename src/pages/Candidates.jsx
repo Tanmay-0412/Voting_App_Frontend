@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Edit,
   Trash2,
   Plus,
   Vote,
 } from "lucide-react";
+import { BASE_URL } from "../../config";
 
 const Candidates = ({ role = "admin" }) => {
   const [candidates, setCandidates] = useState([
@@ -34,6 +35,17 @@ const Candidates = ({ role = "admin" }) => {
     },
   ]);
 
+  const candidateList = async () => {
+    try {
+      const URL = `${BASE_URL}/candidates/list`;
+      const data = await fetch(URL);
+      const response = await data.json();
+      console.log(response);
+    } catch (err) {
+      console.error("Candidate listing error:", err);
+    }
+  };
+
   const handleDelete = (id) => {
     setCandidates(candidates.filter((candidate) => candidate.id !== id));
   };
@@ -52,6 +64,10 @@ const Candidates = ({ role = "admin" }) => {
     (sum, candidate) => sum + candidate.votes,
     0
   );
+
+  useEffect(()=>{
+    candidateList()
+  }, [])
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">

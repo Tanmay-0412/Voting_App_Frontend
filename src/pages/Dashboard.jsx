@@ -55,39 +55,6 @@ const candidates = [
   },
 ];
 
-  // =========================
-  // APIs (Commented for Later Use)
-  // =========================
-
-  /*
-  const userList = async () => {
-    try {
-      const URL = `${BASE_URL}/users/list`;
-
-      const data = await fetch(URL);
-
-      const response = await data.json();
-
-      console.log(response);
-    } catch (err) {
-      console.error("User listing error:", err);
-    }
-  };
-
-  const candidateList = async () => {
-    try {
-      const URL = `${BASE_URL}/candidates/list`;
-
-      const data = await fetch(URL);
-
-      const response = await data.json();
-
-      console.log(response);
-    } catch (err) {
-      console.error("Candidate listing error:", err);
-    }
-  };
-  */
 
   // =========================
   // Calculations
