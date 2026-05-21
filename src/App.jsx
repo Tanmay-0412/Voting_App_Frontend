@@ -1,21 +1,33 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Dashboard from './components/Dashboard'
-import LoginPage from './components/LoginPage';
-import SignupPage from './components/SignupPage';
-
+import Dashboard from './pages/Dashboard';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import AppLayout from './components/layout/AppLayout';
+import Candidates from './pages/Candidates';
+import Users from './pages/Users';
+import Profile from './pages/Profile';
+import VotingPortal from './pages/VotingPortal';
 
 const App = () => {
   return (
     <>
       <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage/>} />
-        <Route path="/register" element={<SignupPage/>} />
-        <Route path="/home" element={<Dashboard/>} />
-      </Routes>
-    </BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LoginPage/>} />
+          <Route path="/register" element={<SignupPage/>} />
+
+          {/* Protected/Layout Routes */}
+          <Route element={<AppLayout />}>
+            <Route path="/home" element={<Dashboard/>} />
+            <Route path="/candidates" element={<Candidates/>} />
+            <Route path="/users" element={<Users/>} />
+            <Route path="/profile" element={<Profile/>} />
+            <Route path="/voting" element={<VotingPortal/>} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
-    
   )
 }
 
