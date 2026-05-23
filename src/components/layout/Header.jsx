@@ -8,7 +8,7 @@ const Header = ({ role, handleRoleToggle }) => {
       </h2>
       
       <div className="flex items-center space-x-6">
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-500">Preview Role:</span>
           <button
             onClick={handleRoleToggle}
@@ -16,7 +16,7 @@ const Header = ({ role, handleRoleToggle }) => {
           >
             Switch to {role === 'admin' ? 'User' : 'Admin'}
           </button>
-        </div>
+        </div> */}
         
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold shadow-sm">

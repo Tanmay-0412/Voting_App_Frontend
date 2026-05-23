@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { toast } from "react-toastify";
 import { BASE_URL } from '../../config';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../utlis/AuthProvider';
 
 const LoginPage = () => {
-
+    const { token, setToken, setIsVoted } = useContext(AuthContext)
     const [username,setUsername] = useState('')
     const [password, setPassword] = useState('')
     const navigate = useNavigate()
@@ -22,6 +24,7 @@ const LoginPage = () => {
         headers: {
             "Content-Type": "application/json",
         },
+        credentials:'include',
         body: JSON.stringify(payload),
         });
 
@@ -32,12 +35,18 @@ const LoginPage = () => {
         }
 
         const res = await response.json();
-        console.log(res)
+        setToken(res.token)
+        localStorage.setItem("Role", res.data.role)
+        
+        // Set voting status from backend
+        if(res.data && typeof res.data.isVoted !== 'undefined') {
+            setIsVoted(res.data.isVoted)
+        }
+        
         toast.success(res.message, {
         position: "top-right",
         theme: "colored",
         });
-        localStorage.setItem("Role",res.data.role)
 
         if(res){
             navigate('/home')

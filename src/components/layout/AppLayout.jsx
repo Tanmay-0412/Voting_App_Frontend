@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import { BASE_URL } from '../../../config';
+import { toast } from 'react-toastify';
 
 const AppLayout = () => {
   // Mock role management for preview purposes
@@ -17,10 +19,24 @@ const AppLayout = () => {
     navigate('/home'); // Redirect to dashboard on role change
   };
 
-  const handleLogout = () => {
-    // localStorage.removeItem('userRole');
-    localStorage.removeItem('Role');
-    navigate('/');
+  const handleLogout = async() => {
+    try{
+      const URL = `${BASE_URL}/logout`
+      const response = await fetch(URL,{
+        method:"POST",
+        credentials:'include'
+      }) 
+      const data = await response.json()
+      toast.info({
+        position: "top-center",
+        theme: "colored",
+      })
+    }catch(err){
+      console.log('Logout Error !', err.message)
+    }finally{
+      localStorage.removeItem('Role');
+      navigate('/');
+    }
   };
 
   return (

@@ -7,10 +7,12 @@ import Candidates from './pages/Candidates';
 import Users from './pages/Users';
 import Profile from './pages/Profile';
 import VotingPortal from './pages/VotingPortal';
+import { AuthProvider } from './utlis/AuthProvider';
 
 const App = () => {
   return (
     <>
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
@@ -27,6 +29,7 @@ const App = () => {
           </Route>
         </Routes>
       </BrowserRouter>
+    </AuthProvider>
     </>
   )
 }

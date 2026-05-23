@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Edit,
   Trash2,
@@ -6,68 +6,148 @@ import {
   Vote,
 } from "lucide-react";
 import { BASE_URL } from "../../config";
+import { toast } from "react-toastify";
+import { AuthContext } from "../utlis/AuthProvider";
+import CandidateModal from "../components/CandidateModal";
 
-const Candidates = ({ role = "admin" }) => {
-  const [candidates, setCandidates] = useState([
-    {
-      id: 1,
-      name: "John Carter",
-      party: "Democratic Party",
-      votes: 420,
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400",
-    },
-    {
-      id: 2,
-      name: "Sarah Wilson",
-      party: "Republic Party",
-      votes: 310,
-      image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400",
-    },
-    {
-      id: 3,
-      name: "Michael Lee",
-      party: "Independent",
-      votes: 210,
-      image:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400",
-    },
-  ]);
+const Candidates = () => {
+  const role = localStorage.getItem('Role')
+  const {token, isVoted, setIsVoted} = useContext(AuthContext)
+  const [candidates, setCandidates] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
 
   const candidateList = async () => {
     try {
       const URL = `${BASE_URL}/candidates/list`;
-      const data = await fetch(URL);
+      const data = await fetch(URL, {
+        method: "GET",
+        credentials: "include",
+      });
       const response = await data.json();
-      console.log(response);
+      setCandidates(response.data)
     } catch (err) {
       console.error("Candidate listing error:", err);
     }
   };
 
-  const handleDelete = (id) => {
-    setCandidates(candidates.filter((candidate) => candidate.id !== id));
+  const handleOpenModal = (candidate = null) => {
+    setSelectedCandidate(candidate);
+    setIsModalOpen(true);
   };
 
-  const handleVote = (id) => {
-    setCandidates((prev) =>
-      prev.map((candidate) =>
-        candidate.id === id
-          ? { ...candidate, votes: candidate.votes + 1 }
-          : candidate
-      )
-    );
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCandidate(null);
+  };
+
+  const handleDelete = async(id) => {
+    if (!window.confirm("Are you sure you want to delete this candidate?")) {
+      return;
+    }
+
+    try{
+      const URL = `${BASE_URL}/candidate/delete/${id}`
+      const response = await fetch(URL, {
+        method:"DELETE",
+        credentials:"include"
+      })
+      const data = await response.json()
+      console.log(response)
+      if(response.ok) {
+        setCandidates(candidates.filter((candidate) => candidate._id !== id));
+        toast.info(`${data.message}`, {
+          position: "top-center",
+          theme: "light",
+        });
+      } else {
+        alert("Failed to delete candidate");
+      }
+    }catch(err){
+      console.error("Error deleting candidate:", err.message);
+      alert("Error deleting candidate");
+    }
+  };
+
+  const handleModalSuccess = () => {
+    candidateList();
+  };
+
+  const handleVote = async(id) => {
+    try{
+      const URL = `${BASE_URL}/cast/vote/${id}`
+      const response = await fetch(URL, {
+        method:"POST",
+        headers:{
+          'Content-Type':"application/json",
+        },
+        credentials:'include'
+      })
+      
+      const data = await response.json()
+      console.log(data)
+
+      if(response.ok) {
+        // Update voting status
+        setIsVoted(true)
+        
+        // Update candidate vote count
+        setCandidates((prev) =>
+          prev.map((candidate) =>
+            candidate._id === id
+              ? { ...candidate, voteCount: candidate.voteCount + 1 }
+              : candidate
+          )
+        );
+
+        toast.success("Vote cast successfully!", {
+          position: "top-center",
+          theme: "light",
+        });
+      } else {
+        toast.error(data.message || "Failed to cast vote", {
+          position: "top-center",
+          theme: "light",
+        });
+      }
+    }catch(err){
+      console.error("Vote error:", err)
+      toast.error("Error casting vote", {
+        position: "top-center",
+        theme: "light",
+      });
+    }
   };
 
   const totalVotes = candidates.reduce(
-    (sum, candidate) => sum + candidate.votes,
+    (sum, candidate) => sum + candidate.voteCount,
     0
   );
 
   useEffect(()=>{
-    candidateList()
+      candidateList()
+      
+      // Fetch user's voting status from profile
+      fetchUserVotingStatus()
   }, [])
+
+  const fetchUserVotingStatus = async () => {
+    try {
+      const URL = `${BASE_URL}/profile/view`;
+      const response = await fetch(URL, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await response.json();
+      
+      // Assuming backend returns isVoted in user profile
+      if (data.data && typeof data.data.isVoted !== 'undefined') {
+        setIsVoted(data.data.isVoted);
+      }
+    } catch (err) {
+      console.error("Error fetching user voting status:", err);
+    }
+  };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
@@ -83,7 +163,9 @@ const Candidates = ({ role = "admin" }) => {
         </div>
 
         {role === "admin" && (
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200">
+          <button 
+            onClick={() => handleOpenModal()}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200">
             <Plus size={18} />
             Add Candidate
           </button>
@@ -100,14 +182,14 @@ const Candidates = ({ role = "admin" }) => {
 
           return (
             <div
-              key={candidate.id}
+              key={candidate._id}
               className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300"
             >
               {/* Image */}
               <div className="h-56 overflow-hidden">
                 <img
                   src={candidate.image}
-                  alt={candidate.name}
+                  alt={candidate.candidateName}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -115,7 +197,7 @@ const Candidates = ({ role = "admin" }) => {
               {/* Content */}
               <div className="p-5">
                 <h3 className="text-xl font-semibold text-gray-800">
-                  {candidate.name}
+                  {candidate.candidateName}
                 </h3>
 
                 <p className="text-sm text-gray-500 mb-4">
@@ -132,7 +214,7 @@ const Candidates = ({ role = "admin" }) => {
                       </span>
 
                       <span className="font-semibold text-blue-600">
-                        {candidate.votes}
+                        {candidate.voteCount}
                       </span>
                     </div>
 
@@ -146,14 +228,16 @@ const Candidates = ({ role = "admin" }) => {
 
                     {/* Actions */}
                     <div className="flex gap-3">
-                      <button className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-blue-50 hover:text-blue-600 text-gray-700 py-2 rounded-lg transition-all duration-200">
+                      <button 
+                        className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-blue-50 hover:text-blue-600 text-gray-700 py-2 rounded-lg transition-all duration-200"
+                        onClick={() => handleOpenModal(candidate)}>
                         <Edit size={16} />
                         Edit
                       </button>
 
                       <button
                         onClick={() =>
-                          handleDelete(candidate.id)
+                          handleDelete(candidate._id)
                         }
                         className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-700 py-2 rounded-lg transition-all duration-200"
                       >
@@ -165,11 +249,16 @@ const Candidates = ({ role = "admin" }) => {
                 ) : (
                   /* User View */
                   <button
-                    onClick={() => handleVote(candidate.id)}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-all duration-200"
+                    onClick={() => handleVote(candidate._id)}
+                    disabled={isVoted}
+                    className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg transition-all duration-200 ${
+                      isVoted
+                        ? "bg-gray-400 text-gray-600 cursor-not-allowed opacity-60"
+                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                    }`}
                   >
                     <Vote size={18} />
-                    Vote Now
+                    {isVoted ? "Already Voted" : "Vote Now"}
                   </button>
                 )}
               </div>
@@ -177,6 +266,14 @@ const Candidates = ({ role = "admin" }) => {
           );
         })}
       </div>
+
+      {/* Candidate Modal */}
+      <CandidateModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        candidate={selectedCandidate}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   );
 };
