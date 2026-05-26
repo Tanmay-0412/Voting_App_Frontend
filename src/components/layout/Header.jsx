@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({ role, handleRoleToggle }) => {
+  const navigate = useNavigate()
   return (
     <header className="h-16 bg-white shadow-sm flex items-center justify-between px-8 z-10">
       <h2 className="text-xl font-semibold text-gray-800">
@@ -19,7 +21,8 @@ const Header = ({ role, handleRoleToggle }) => {
         </div> */}
         
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold shadow-sm">
+          <div className="w-10 h-10 cursor-pointer rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold shadow-sm"
+          onClick={()=> navigate('/profile')}>
             {role === 'admin' ? 'A' : 'U'}
           </div>
           <div>

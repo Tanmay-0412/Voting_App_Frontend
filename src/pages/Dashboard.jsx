@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -12,62 +12,15 @@ import {
   Cell,
 } from "recharts";
 import { BASE_URL } from "../../config";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
-
-  // =========================
-  // Dummy Data
-  // =========================
-
-  const users = [
-  { id: 1, name: "John" },
-  { id: 2, name: "Sarah" },
-  { id: 3, name: "Michael" },
-  { id: 4, name: "Emma" },
-  { id: 5, name: "David" },
-  { id: 6, name: "Chris" },
-  { id: 7, name: "Olivia" },
-  { id: 8, name: "Daniel" },
-  { id: 9, name: "Sophia" },
-  { id: 10, name: "James" },
-];
-
-const candidates = [
-  {
-    id: 1,
-    name: "John Carter",
-    votes: 4,
-  },
-  {
-    id: 2,
-    name: "Sarah Wilson",
-    votes: 3,
-  },
-  {
-    id: 3,
-    name: "Michael Lee",
-    votes: 2,
-  },
-  {
-    id: 4,
-    name: "Emma Brown",
-    votes: 1,
-  },
-];
-
-
-  // =========================
-  // Calculations
-  // =========================
-
-  const totalVotes = candidates.reduce(
-    (sum, item) => sum + item.votes,
-    0
-  );
-
-  const leadingCandidate = candidates.reduce((prev, current) =>
-    prev.votes > current.votes ? prev : current
-  );
+  const [dashboardData, setDashboardData] = useState({
+    usersCount: 0,
+    totalVotes: 0,
+    candidateVotes: [],
+    leadingCandidate: {}
+  })
 
   const COLORS = [
     "#2563eb",
@@ -75,6 +28,23 @@ const candidates = [
     "#dc2626",
     "#ca8a04",
   ];
+  const dashboardDetails = async() =>{
+    try{
+      const URL = `${BASE_URL}/dashboard`
+      const data = await fetch(URL, {
+          method:"GET",
+          credentials:'include'
+      })
+      const response = await data.json()
+      setDashboardData(response)
+    }catch(err){
+      console.error(err.message)
+    }
+  }
+
+  useEffect(()=>{
+    dashboardDetails()
+  },[])
 
   return (
     <div className="p-6 space-y-6">
@@ -97,7 +67,7 @@ const candidates = [
           </p>
 
           <h2 className="text-3xl font-bold text-blue-600 mt-2">
-            {users.length}
+            {dashboardData.usersCount}
           </h2>
         </div>
 
@@ -107,7 +77,7 @@ const candidates = [
           </p>
 
           <h2 className="text-3xl font-bold text-green-600 mt-2">
-            {candidates.length}
+            {dashboardData.candidateVotes?.length}
           </h2>
         </div>
 
@@ -117,7 +87,7 @@ const candidates = [
           </p>
 
           <h2 className="text-3xl font-bold text-red-600 mt-2">
-            {totalVotes}
+            {dashboardData.totalVotes}
           </h2>
         </div>
 
@@ -127,7 +97,7 @@ const candidates = [
           </p>
 
           <h2 className="text-xl font-bold text-purple-600 mt-2">
-            {leadingCandidate.name}
+            {dashboardData.leadingCandidate?.name || "N/A"}
           </h2>
         </div>
       </div>
@@ -141,7 +111,10 @@ const candidates = [
           </h2>
 
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={candidates}>
+            <BarChart data={dashboardData.candidateVotes?.map(candidate => ({
+              name: candidate.name,
+              votes: candidate.votesCount
+            }))}>
               <CartesianGrid strokeDasharray="3 3" />
 
               <XAxis dataKey="name" />
@@ -168,13 +141,16 @@ const candidates = [
           <ResponsiveContainer width="100%" height={350}>
             <PieChart>
               <Pie
-                data={candidates}
+                data={dashboardData.candidateVotes?.map(candidate => ({
+                  name: candidate.name,
+                  votes: candidate.votesCount
+                }))}
                 dataKey="votes"
                 nameKey="name"
                 outerRadius={120}
                 label
               >
-                {candidates.map((entry, index) => (
+                {dashboardData.candidateVotes?.map((entry, index) => (
                   <Cell
                     key={index}
                     fill={COLORS[index % COLORS.length]}

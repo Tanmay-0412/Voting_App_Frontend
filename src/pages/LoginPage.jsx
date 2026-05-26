@@ -9,6 +9,7 @@ const LoginPage = () => {
     const { token, setToken, setIsVoted } = useContext(AuthContext)
     const [username,setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [role,setRole] = useState('voter')
     const navigate = useNavigate()
 
     const handleLogin = async () => {
@@ -16,6 +17,7 @@ const LoginPage = () => {
         const payload = {
         username: username,
         password: password,
+        role: role
         };
 
         const URL = `${BASE_URL}/login`;
@@ -90,9 +92,10 @@ const LoginPage = () => {
             </div>
             <div>
                 <label className="block text-gray-700 font-medium mb-1">Role</label>
-                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <option>User</option>
-                <option>Admin</option>
+                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                onChange={(e)=> setRole(e.target.value)}>
+                <option value='voter'>User</option>
+                <option value='admin'>Admin</option>
                 </select>
             </div>
             <button

@@ -176,7 +176,7 @@ const Candidates = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {candidates.map((candidate) => {
           const percentage = (
-            (candidate.votes / totalVotes) *
+            (candidate.votes.length / totalVotes) *
             100
           ).toFixed(1);
 
@@ -225,6 +225,23 @@ const Candidates = () => {
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
+
+                    {/* Voters List */}
+                    {candidate.votes && candidate.votes.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-sm font-semibold text-gray-700 mb-2">
+                          Voters ({candidate.votes.length})
+                        </p>
+                        <ul className="text-sm text-gray-600 space-y-1 max-h-32 overflow-y-auto">
+                          {candidate.votes.map((voter, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <span className="text-blue-600">•</span>
+                              {voter.user?.username || "Anonymous"}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
                     {/* Actions */}
                     <div className="flex gap-3">
