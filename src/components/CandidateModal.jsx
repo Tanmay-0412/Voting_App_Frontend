@@ -20,12 +20,14 @@ const CandidateModal = ({ isOpen, onClose, candidate, onSuccess }) => {
         candidateName: candidate.candidateName || "",
         party: candidate.party || "",
         age: candidate.age || "",
+        imageUrl : candidate.imageUrl || ""
       });
     } else {
       setFormData({
         candidateName: "",
         party: "",
         age: "",
+        imageUrl:""
       });
     }
     setError("");
@@ -45,7 +47,7 @@ const CandidateModal = ({ isOpen, onClose, candidate, onSuccess }) => {
       return false;
     }
     if (!formData.party.trim()) {
-      setError("Party name is required");
+      setError("role is required");
       return false;
     }
     if (!formData.age || isNaN(formData.age) || formData.age < 18) {
@@ -74,7 +76,7 @@ const CandidateModal = ({ isOpen, onClose, candidate, onSuccess }) => {
         candidateName: formData.candidateName,
         party: formData.party,
         age: parseInt(formData.age),
-        image: formData.image,
+        imageUrl: formData.imageUrl,
       };
 
       let URL, method;
@@ -164,7 +166,7 @@ const CandidateModal = ({ isOpen, onClose, candidate, onSuccess }) => {
           {/* Party */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Party *
+              Role *
             </label>
             <input
               type="text"
@@ -201,8 +203,8 @@ const CandidateModal = ({ isOpen, onClose, candidate, onSuccess }) => {
             </label>
             <input
               type="url"
-              name="image"
-              value={formData.image}
+              name="imageUrl"
+              value={formData.imageUrl}
               onChange={handleChange}
               placeholder="Enter image URL"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -211,13 +213,13 @@ const CandidateModal = ({ isOpen, onClose, candidate, onSuccess }) => {
           </div>
 
           {/* Image Preview */}
-          {formData.image && (
+          {formData.imageUrl && (
             <div className="mt-4">
               <p className="text-sm font-medium text-gray-700 mb-2">
                 Preview
               </p>
               <img
-                src={formData.image}
+                src={formData.imageUrl}
                 alt="Preview"
                 className="w-full h-40 object-cover rounded-lg border border-gray-200"
                 onError={(e) => {

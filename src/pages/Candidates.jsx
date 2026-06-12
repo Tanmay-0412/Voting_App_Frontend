@@ -188,7 +188,7 @@ const Candidates = () => {
               {/* Image */}
               <div className="h-56 overflow-hidden">
                 <img
-                  src={candidate.image}
+                  src={candidate.imageUrl}
                   alt={candidate.candidateName}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 />

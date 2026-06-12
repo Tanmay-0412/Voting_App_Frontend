@@ -67,7 +67,7 @@ const Dashboard = () => {
           </p>
 
           <h2 className="text-3xl font-bold text-blue-600 mt-2">
-            {dashboardData.usersCount}
+            {dashboardData.totalUsers}
           </h2>
         </div>
 

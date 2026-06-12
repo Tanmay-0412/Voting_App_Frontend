@@ -13,7 +13,7 @@ const Users = () => {
         credentials: "include",
       });
       const response = await data.json();
-      console.log(response.data);
+      // console.log(response.data);
       if (response.data) {
         setUsers(response.data);
       }
