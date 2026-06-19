@@ -29,7 +29,7 @@ const Dashboard = () => {
     "#ca8a04",
   ];
   const dashboardDetails = async() =>{
-    try{
+    try{ debugger
       const URL = `${BASE_URL}/dashboard`
       const data = await fetch(URL, {
           method:"GET",

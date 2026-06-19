@@ -27,8 +27,8 @@ const AppLayout = () => {
         credentials:'include'
       }) 
       const data = await response.json()
-      toast.info({
-        position: "top-center",
+      toast.info(data.message, {
+        position: "top-right",
         theme: "colored",
       })
     }catch(err){

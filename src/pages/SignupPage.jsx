@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { BASE_URL } from '../../config'
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const SignupPage = () => {
     const [username,setUsername] = useState('')
@@ -10,6 +11,7 @@ const SignupPage = () => {
     const [mobile, setMobile] = useState('')
     const [aadharCardNumber,setAadharCardNumber] = useState('')
     const [age,setAge] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
     const navigate = useNavigate()
 
     const handleSignup = async() =>{
@@ -54,8 +56,6 @@ const SignupPage = () => {
         
     }
 
-
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-8 border border-gray-300">
@@ -65,8 +65,6 @@ const SignupPage = () => {
             if(mobile.length > 10){
                 toast.error('Enter valid mobile number')
             }
-
-
             handleSignup()
         }}>
             <div>
@@ -111,14 +109,27 @@ const SignupPage = () => {
                 maxLength={12}
             />
             </div>
-            <div>
-            <label className="block text-gray-700 font-medium mb-1">Password</label>
-            <input
-                type="password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                onChange={(e)=> setPassword(e.target.value)}
-            />
-            </div>
+             <div className="relative w-full">
+                <label className="block text-gray-700 font-medium mb-1">Password</label>
+                <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none pr-10"
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-9.5 text-gray-500 hover:text-black focus:outline-none"
+                    aria-label="Toggle password visibility"
+                >
+                    {showPassword ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                    ) : (
+                    <EyeIcon className="h-5 w-5" />
+                    )}
+                </button>
+                </div>
             <button
             // type="submit"
             className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200"
